@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Getting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <style>
+        /* CSS styles can also be added in a <style> tag within the <head> section */
+        /* Define CSS rules here */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+<h1>Site server 1</h1>
+<p th:text="|Test info Hello, ${name}!|" />
+</body>
+</html>

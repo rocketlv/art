@@ -1,0 +1,12 @@
+services:
+  art:
+    build: .
+    working_dir: /app
+    command:
+      - ./run.sh
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
+
+
