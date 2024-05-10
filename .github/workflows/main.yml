@@ -47,7 +47,7 @@ jobs:
       name: Build and push
       uses: docker/build-push-action@v5      
       with:
-        context: ${{ $GITHUB_WORKSPACE }}
+        context: ${{ github.workspace }}
         push: true
         tags: rocketlv/art:latest 
 
