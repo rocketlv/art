@@ -18,6 +18,8 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+    - name: Print Path
+      run: echo "The system Path $GITHUB_WORKSPACE"
     
     - uses: actions/upload-artifact@v4
       with:
@@ -43,8 +45,9 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     -
       name: Build and push
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v5      
       with:
+        context: ${{ $GITHUB_WORKSPACE }}
         push: true
         tags: rocketlv/art:latest 
 
