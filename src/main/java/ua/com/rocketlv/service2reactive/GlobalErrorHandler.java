@@ -2,6 +2,7 @@ package ua.com.rocketlv.service2reactive;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import reactor.core.publisher.Mono;
@@ -16,8 +17,10 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalErrorHandler {
 
+
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
     public Mono<ErrorResponse> handleUserNotFound(UserNotFoundException ex) {
         System.out.println("UserNotFoundException: " + ex.getMessage());
         return Mono.just(new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage()));

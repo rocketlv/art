@@ -1,5 +1,9 @@
 
 spring:
+#  webflux:
+#    base-path: /
+  main:
+    web-application-type: reactive
   application:
     name: service2reactive
   datasource:

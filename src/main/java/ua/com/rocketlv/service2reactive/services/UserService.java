@@ -18,8 +18,8 @@ public class UserService {
 
     public Mono<UserDto> getUserById(Long id) {
         return userRepository.findById(id).map(userMapper::mapToUserDto)
-                .switchIfEmpty(Mono.error(new RuntimeException("User with ID " + id + " not found")));
-//        new UserNotFoundException(id))
+                .switchIfEmpty(Mono.error(new UserNotFoundException(id)));
+
     }
 
     public Flux<UserDto> getAllUsers() {
