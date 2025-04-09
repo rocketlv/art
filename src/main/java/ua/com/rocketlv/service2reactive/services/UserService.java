@@ -9,6 +9,8 @@ import ua.com.rocketlv.service2reactive.exceptions.UserNotFoundException;
 import ua.com.rocketlv.service2reactive.dto.UserDto;
 import ua.com.rocketlv.service2reactive.repo.UserRepository;
 
+import java.time.Duration;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -17,13 +19,17 @@ public class UserService {
     private final UserRepository userRepository;
 
     public Mono<UserDto> getUserById(Long id) {
-        return userRepository.findById(id).map(userMapper::mapToUserDto)
+        var s =  userRepository.findById(id).map(userMapper::mapToUserDto).filter(userDto -> userDto.getId().equals(id))
                 .switchIfEmpty(Mono.error(new UserNotFoundException(id)));
+        s.subscribe(res-> System.out.println("User found: " + res));
+        return s;
 
     }
 
     public Flux<UserDto> getAllUsers() {
-        return userRepository.findAll().map(userMapper::mapToUserDto);
+        var u =  userRepository.findAll().map(userMapper::mapToUserDto);
+        u.delayElements(Duration.ofMillis(2000)).subscribe(res-> System.out.println("All users: " + res));
+        return u;
     }
 
     public Flux<UserDto> getUsersByCity(String city) {
