@@ -27,8 +27,8 @@ public class UserService {
     }
 
     public Flux<UserDto> getAllUsers() {
-        var u =  userRepository.findAll().map(userMapper::mapToUserDto);
-        u.delayElements(Duration.ofMillis(2000)).subscribe(res-> System.out.println("All users: " + res));
+        var u =  userRepository.findAll().map(userMapper::mapToUserDto).delayElements(Duration.ofMillis(0));
+        u.subscribe(res-> System.out.println("All users: " + res));
         return u;
     }
 
