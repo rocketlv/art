@@ -5,14 +5,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import reactor.core.publisher.Flux;
 import ua.com.rocketlv.service2reactive.dao.User;
+import ua.com.rocketlv.service2reactive.dao.Userlog;
 import ua.com.rocketlv.service2reactive.repo.UserRepository;
+import ua.com.rocketlv.service2reactive.repo.UserlogRepository;
 
 @Configuration
 public class AppConfig {
 
 
     @Bean
-    public CommandLineRunner initDatabase(UserRepository userRepository) {
+    public CommandLineRunner initDatabase(UserRepository userRepository, UserlogRepository userlogRepository) {
         return args -> {
             // Clear existing data
             Flux<User> users = Flux.just(
@@ -23,12 +25,25 @@ public class AppConfig {
                     new User(null, "Андрій Пилипенко", 47, "Berlin", "Software developer")
             );
 
+
             userRepository.deleteAll().thenMany(
                             users.flatMap(userRepository::save)
-
                     ).thenMany(userRepository.findAll())
                     .subscribe(
-                            user -> System.out.println("Inserted: " + user),
+                            user -> {
+                                Flux<Userlog> userlogs = Flux.just(new Userlog(null, user.getId(),33, "Log message 1"),
+                                        new Userlog(null, user.getId(),33, "Log message 2"),
+                                        new Userlog(null, user.getId(),44, "Log message 3"));
+                                System.out.println("Inserted: " + user);
+                                userlogs.flatMap(userlog -> {
+                                            System.out.println("Inserted log: " + userlog);
+                                            return userlogRepository.save(userlog);
+                                        }
+                                ).subscribe(
+                                        log -> System.out.println("Log saved: " + log),
+                                        error -> System.err.println("Error saving log: " + error)
+                                );
+                            },
                             error -> System.err.println("Error: " + error),
                             () -> System.out.println("Initialization completed")
                     );

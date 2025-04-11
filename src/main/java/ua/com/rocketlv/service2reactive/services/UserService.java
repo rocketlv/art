@@ -8,6 +8,7 @@ import ua.com.rocketlv.service2reactive.exceptions.ObjectNotFoundException;
 import ua.com.rocketlv.service2reactive.exceptions.UserNotFoundException;
 import ua.com.rocketlv.service2reactive.dto.UserDto;
 import ua.com.rocketlv.service2reactive.repo.UserRepository;
+import ua.com.rocketlv.service2reactive.repo.UserlogRepository;
 
 import java.time.Duration;
 
@@ -17,6 +18,7 @@ public class UserService {
     final UserMapper userMapper;
 
     private final UserRepository userRepository;
+    private final UserlogRepository userlogRepository;
 
     public Mono<UserDto> getUserById(Long id) {
         var s =  userRepository.findById(id).map(userMapper::mapToUserDto).filter(userDto -> userDto.getId().equals(id))
@@ -36,6 +38,14 @@ public class UserService {
         return userRepository.findByCity(city).map(userMapper::mapToUserDto).switchIfEmpty(
                 Mono.error(new ObjectNotFoundException(city))
         );
+    }
+
+    public Mono<UserDto> getUserWithLogs(Long id) {
+        return userRepository.findById(id)
+                .flatMap(user -> userlogRepository.findByUserId(id)
+                        .collectList()
+                        .map(logs -> userMapper.mapToUserDtoWithLogs(user, logs)))
+                .switchIfEmpty(Mono.error(new UserNotFoundException(id)));
     }
 
 }

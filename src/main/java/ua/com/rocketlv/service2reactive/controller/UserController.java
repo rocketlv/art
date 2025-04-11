@@ -28,7 +28,7 @@ public class UserController {
     @CrossOrigin("*")
     @GetMapping("/{id}")
     public Mono<UserDto> getUserById(@PathVariable Long id) {
-        return userService.getUserById(id);
+        return userService.getUserWithLogs(id);
     }
 
     @GetMapping("/city/{city}")
