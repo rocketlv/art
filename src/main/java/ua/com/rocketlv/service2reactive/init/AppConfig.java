@@ -31,9 +31,9 @@ public class AppConfig {
                     ).thenMany(userRepository.findAll())
                     .subscribe(
                             user -> {
-                                Flux<Userlog> userlogs = Flux.just(new Userlog(null, user.getId(),33, "Log message 1"),
-                                        new Userlog(null, user.getId(),33, "Log message 2"),
-                                        new Userlog(null, user.getId(),44, "Log message 3"));
+                                Flux<Userlog> userlogs = Flux.just(new Userlog(null, user.getId(), 33, "Log message 1"),
+                                        new Userlog(null, user.getId(), 33, "Log message 2"),
+                                        new Userlog(null, user.getId(), 44, "Log message 3"));
                                 System.out.println("Inserted: " + user);
                                 userlogs.flatMap(userlog -> {
                                             System.out.println("Inserted log: " + userlog);
@@ -47,8 +47,6 @@ public class AppConfig {
                             error -> System.err.println("Error: " + error),
                             () -> System.out.println("Initialization completed")
                     );
-
-
         };
     }
 }

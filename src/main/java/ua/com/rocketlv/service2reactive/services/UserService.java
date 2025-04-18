@@ -9,6 +9,8 @@ import ua.com.rocketlv.service2reactive.dao.User;
 import ua.com.rocketlv.service2reactive.dao.Userlog;
 import ua.com.rocketlv.service2reactive.dto.UserDto;
 import ua.com.rocketlv.service2reactive.exceptions.ObjectNotFoundException;
+import ua.com.rocketlv.service2reactive.exceptions.UserCreationException;
+import ua.com.rocketlv.service2reactive.exceptions.UserLogCreationException;
 import ua.com.rocketlv.service2reactive.exceptions.UserNotFoundException;
 import ua.com.rocketlv.service2reactive.repo.UserRepository;
 import ua.com.rocketlv.service2reactive.repo.UserlogRepository;
@@ -69,17 +71,17 @@ public class UserService {
                 .filter(dto -> dto != null)
                 .map(userMapper::mapToUser)
                 .flatMap(user -> userRepository.save(user)
-                        .switchIfEmpty(Mono.error(new RuntimeException("User creation Error !")))
+                        .switchIfEmpty(Mono.error(UserCreationException::new))
                         .flatMap(createduser -> {
                             Flux<Userlog> userlogFlux = Flux.fromIterable(userlogs);
                             return userlogFlux.filter(listoflogs -> listoflogs != null)
                                     .flatMap(userlog -> {
                                         userlog.setUserId(createduser.getId());
                                         return userlogRepository.save(userlog)
-                                                .switchIfEmpty(Mono.error(new RuntimeException("User log creation Error !")));
+                                                .switchIfEmpty(Mono.error(UserLogCreationException::new));
                                     }).then(Mono.just(createduser).map(userMapper::mapToUserDto));
                         })
                 );
-
     }
+
 }

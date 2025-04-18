@@ -21,5 +21,4 @@ public class UserDto {
     private String city;
     private String description;
     private List<Userlog> logs;
-
 }
