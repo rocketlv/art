@@ -22,11 +22,11 @@ public class UserController {
     private final UserService userService;
     private final RemoteApiService remoteApiService;
 
-
-    @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Flux<UserDto> getAllUsers() {
         return userService.getAllUsers().delayElements(Duration.ofSeconds(0));
     }
+
     @CrossOrigin("*")
     @GetMapping("/{id}")
     public Mono<UserDto> getUserById(@PathVariable Long id) {
