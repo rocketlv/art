@@ -23,6 +23,8 @@ import org.springframework.security.oauth2.client.InMemoryReactiveOAuth2Authoriz
 import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
+import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
@@ -50,17 +52,21 @@ public class SecurityConfig {
                         .pathMatchers("/api/**").permitAll()
                         .pathMatchers("/users/**").authenticated()
                         .anyExchange().authenticated()
+                ).oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwtSpec -> jwtSpec.jwtAuthenticationConverter(jwtConverter()))
+                        .authenticationEntryPoint((exchange, ex) -> {
+                            System.out.println("Authentication error: " + ex.getMessage());
+                            exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+                            return exchange.getResponse().setComplete();
+                        })
                 )
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtSpec -> {
-                    jwtSpec.jwtAuthenticationConverter(jwtConverter());
-                    // Add JWT exception handler
-                    oauth2.authenticationEntryPoint((exchange, ex) -> {
-                        System.out.println("Authentication error: " + ex.getMessage());
-                        exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
-                        return exchange.getResponse().setComplete();
-                    });
-                }))
-                .oauth2Login(oauth2 ->  oauth2
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .accessDeniedHandler((exchange, denied) -> {
+                            System.out.println("Access denied: " + denied.getMessage());
+                            exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+                            return exchange.getResponse().setComplete();
+                        })
+                ).oauth2Login(oauth2 -> oauth2
                         .authorizationRequestResolver(
                                 new CustomServerAuthorizationRequestResolver(clientRegistrationRepository)
                         ));
@@ -68,10 +74,10 @@ public class SecurityConfig {
 
         return http.build();
     }
-
     @Bean
-    public ReactiveAuthenticationManager reactiveAuthenticationManager() {
-        return Mono::just;
+    public ReactiveJwtDecoder reactiveJwtDecoder() {
+        String jwkSetUri = "https://www.googleapis.com/oauth2/v3/certs";
+        return NimbusReactiveJwtDecoder.withJwkSetUri(jwkSetUri).build();
     }
 
     @Bean
@@ -85,7 +91,6 @@ public class SecurityConfig {
                 // Validate email against allowed emails or domains
                 if (!isEmailAllowed(email)) {
                     System.out.println("Access denied for email: " + email);
-                    // Use AccessDeniedException which Spring Security knows how to handle
                     return Mono.error(new AccessDeniedException("Email not allowed: " + email));
                 }
 
@@ -95,7 +100,8 @@ public class SecurityConfig {
     }
 
     private boolean isEmailAllowed(String email) {
-        return Objects.equals("rocketlv1@gmail.com",email);
+        if (email == null) return false;
+        return Objects.equals("rocketlv1@gmail.com", email);
     }
 
     @Bean
