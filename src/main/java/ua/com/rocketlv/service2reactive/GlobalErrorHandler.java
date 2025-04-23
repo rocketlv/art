@@ -38,5 +38,9 @@ public class GlobalErrorHandler {
         return Mono.just(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage()));
     }
 
-}
+    @ExceptionHandler(IllegalAccessException.class)
+    public Mono<ErrorResponse> handleIllegalAccessException(IllegalAccessException ex) {
+        return Mono.just(ex.getMessage())
+                .map(message -> new ErrorResponse(HttpStatus.FORBIDDEN.value(), message));
+    }}
 

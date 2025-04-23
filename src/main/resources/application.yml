@@ -1,5 +1,11 @@
 server:
   port: 8082
+#  ssl:
+#  enabled: true
+#  key-store: classpath:keystore.p12
+#  key-store-password: password
+#  key-store-type: PKCS12
+#  key-alias: reactive
 spring:
 #  webflux:
 #    base-path: /
@@ -16,14 +22,16 @@ spring:
           google:
             client-id: 885176901627-7ar6btfh7kvnp6v2vah8hmh56l5mnn3n.apps.googleusercontent.com
             client-secret: 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
-            scope: openid,profile,email
-            redirect-uri: "http://localhost:8082/login/oauth2/code/google"
+            scope:
+              - openid
+              - profile
+              - email
+            redirect-uri: https://localhost:8082/login/oauth2/code/google
+            access-type: offline
+            prompt: consent
         provider:
           google:
-            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
-            token-uri: https://oauth2.googleapis.com/token
-            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
-            user-name-attribute: sub
+            issuer-uri: https://accounts.google.com
   application:
     name: service2reactive
   datasource:
@@ -46,6 +54,8 @@ spring:
 web-client-endpoints:
   epm-api:
     url: https://epm.ecotep.com.ua
-
+logging:
+  level:
+    org.springframework.security: DEBUG
 
 
