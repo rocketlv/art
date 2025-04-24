@@ -18,4 +18,5 @@ public class User {
     private Integer age;
     private String city;
     private String description;
+    private String email;
 }

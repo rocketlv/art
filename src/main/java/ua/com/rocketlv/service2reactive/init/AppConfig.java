@@ -18,14 +18,12 @@ public class AppConfig {
         return args -> {
             // Clear existing data
             Flux<User> users = Flux.just(
-                    new User(null, "John Doe", 30, "New York", "Software developer"),
-                    new User(null, "Jane Smith", 25, "London", "Data scientist"),
-                    new User(null, "Mike Johnson", 35, "Berlin", "Product manager"),
-                    new User(null, "Юрій Метопенко", 35, "Berlin", "Tester manager"),
-                    new User(null, "Андрій Пилипенко", 47, "Berlin", "Software developer")
+                    new User(null, "John Doe", 30, "New York", "Software developer","rocketlv@gmail.com"),
+                    new User(null, "Jane Smith", 25, "London", "Data scientist","transpo@gmail.com"),
+                    new User(null, "Mike Johnson", 35, "Berlin", "Product manager","goal@gmail.com"),
+                    new User(null, "Юрій Метопенко", 35, "Berlin", "Tester manager","rafl@gmail.com"),
+                    new User(null, "Андрій Пилипенко", 47, "Berlin", "Software developer","most@gmail.com")
             );
-
-
             userRepository.deleteAll().thenMany(
                             users.flatMap(userRepository::save)
                     ).thenMany(userRepository.findAll())
